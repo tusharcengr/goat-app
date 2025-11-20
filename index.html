@@ -3,111 +3,172 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>প্রফেশনাল ছাগল পালন</title>
+  <title>TechOrganic Agro Farm</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
     .hidden { display: none !important; }
-    .goat-card { transition: all 0.3s; }
-    .goat-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+    .goat-card { transition: all 0.3s; cursor: pointer; }
+    .goat-card:hover { transform: translateY(-5px); box-shadow: 0 12px 30px rgba(0,0,0,0.15); }
+    .kid-badge { background: #ec4899; color: white; padding: 6px 14px; border-radius: 999px; font-size: 0.85rem; font-weight: bold; }
+    .tag-id { font-weight: bold; color: #1d4ed8; }
   </style>
 </head>
-<body class="bg-gradient-to-br from-green-50 to-cyan-50 min-h-screen">
+<body class="bg-gradient-to-br from-green-50 to-teal-50 min-h-screen">
 
-<div class="max-w-6xl mx-auto p-4">
+<div class="max-w-6xl mx-auto p-5">
   <div class="bg-white rounded-3xl shadow-2xl overflow-hidden">
 
     <!-- ড্যাশবোর্ড -->
     <div id="dash" class="p-8">
-      <h1 class="text-5xl font-bold text-center text-green-700 mb-8">প্রফেশনাল ছাগল পালন</h1>
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-10">
-        <button onclick="show('addgoat')" class="bg-green-600 hover:bg-green-700 text-white py-6 rounded-2xl text-xl font-bold">নতুন ছাগল</button>
-        <button onclick="show('list')" class="bg-indigo-600 hover:bg-indigo-700 text-white py-6 rounded-2xl text-xl font-bold">লিস্ট ও রেকর্ড</button>
-        <button onclick="show('breeding')" class="bg-purple-600 hover:bg-purple-700 text-white py-6 rounded-2xl text-xl font-bold">ব্রিডিং</button>
-        <button onclick="show('stats')" class="bg-orange-600 hover:bg-orange-700 text-white py-6 rounded-2xl text-xl font-bold">গ্রোথ চার্ট</button>
+      <h1 class="text-5xl font-bold text-center text-green-700 mb-8">TechOrganic Agro Farm</h1>
+      
+      <div class="grid grid-cols-2 md:grid-cols-5 gap-6 mb-10">
+        <button onclick="show('addgoat')" class="flex items-center justify-center gap-3 bg-green-600 hover:bg-green-700 text-white py-6 rounded-2xl text-xl font-bold">
+          <i class="fas fa-plus-circle"></i> নতুন ছাগল
+        </button>
+        <button onclick="showAllList()" class="flex items-center justify-center gap-3 bg-indigo-600 hover:bg-indigo-700 text-white py-6 rounded-2xl text-xl font-bold">
+          <i class="fas fa-list-ul"></i> সব ছাগল
+        </button>
+        <button onclick="showKids()" class="flex items-center justify-center gap-3 bg-pink-600 hover:bg-pink-700 text-white py-6 rounded-2xl text-xl font-bold">
+          <i class="fas fa-baby"></i> বাচ্চা (≤90)
+        </button>
+        <button onclick="show('breeding')" class="flex items-center justify-center gap-3 bg-purple-600 hover:bg-purple-700 text-white py-6 rounded-2xl text-xl font-bold">
+          <i class="fas fa-heart"></i> ব্রিডিং
+        </button>
+        <button onclick="show('stats')" class="flex items-center justify-center gap-3 bg-orange-600 hover:bg-orange-700 text-white py-6 rounded-2xl text-xl font-bold">
+          <i class="fas fa-chart-line"></i> চার্ট
+        </button>
       </div>
 
-      <div class="grid grid-cols-3 md:grid-cols-6 gap-6 text-center">
-        <div class="bg-blue-100 p-6 rounded-2xl"><p class="text-4xl font-bold" id="total">0</p><p>মোট</p></div>
-        <div class="bg-pink-100 p-6 rounded-2xl"><p class="text-4xl font-bold" id="female">0</p><p>মাদি</p></div>
-        <div class="bg-indigo-100 p-6 rounded-2xl"><p class="text-4xl font-bold" id="male">0</p><p>পুরুষ</p></div>
-        <div class="bg-purple-100 p-6 rounded-2xl"><p class="text-4xl font-bold" id="pregnant">0</p><p>গর্ভবতী</p></div>
-        <div class="bg-yellow-100 p-6 rounded-2xl"><p class="text-4xl font-bold" id="patha">0</p><p>পাঠা</p></div>
-        <div class="bg-gray-400 p-6 rounded-2xl"><p class="text-4xl font-bold" id="khashi">0</p><p>খাসি</p></div>
+      <div class="grid grid-cols-3 md:grid-cols-7 gap-6 text-center">
+        <div onclick="showAllList()" class="cursor-pointer bg-blue-100 p-6 rounded-2xl hover:bg-blue-200 transition"><p class="text-4xl font-bold" id="total">0</p><p>মোট</p></div>
+        <div onclick="filterList('female')" class="cursor-pointer bg-pink-100 p-6 rounded-2xl hover:bg-pink-200 transition"><p class="text-4xl font-bold" id="female">0</p><p>মাদি</p></div>
+        <div onclick="filterList('male')" class="cursor-pointer bg-indigo-100 p-6 rounded-2xl hover:bg-indigo-200 transition"><p class="text-4xl font-bold" id="male">0</p><p>পুরুষ</p></div>
+        <div onclick="filterList('pregnant')" class="cursor-pointer bg-purple-100 p-6 rounded-2xl hover:bg-purple-200 transition"><p class="text-4xl font-bold" id="pregnant">0</p><p>গর্ভবতী</p></div>
+        <div onclick="showKids()" class="cursor-pointer bg-rose-200 p-6 rounded-2xl hover:bg-rose-300 transition"><p class="text-4xl font-bold" id="kids">0</p><p>বাচ্চা</p></div>
+        <div onclick="filterList('patha')" class="cursor-pointer bg-yellow-100 p-6 rounded-2xl hover:bg-yellow-200 transition"><p class="text-4xl font-bold" id="patha">0</p><p>পাঠা</p></div>
+        <div onclick="filterList('khashi')" class="cursor-pointer bg-gray-400 p-6 rounded-2xl hover:bg-gray-500 transition"><p class="text-4xl font-bold" id="khashi">0</p><p>খাসি</p></div>
       </div>
     </div>
 
     <!-- নতুন ছাগল যোগ -->
     <div id="addgoat" class="hidden p-8">
-      <button onclick="show('dash')" class="mb-6 text-blue-600 font-bold text-xl">ড্যাশবোর্ড</button>
-      <h2 class="text-3xl font-bold text-center mb-8">নতুন ছাগল যোগ করুন</h2>
-      <form id="goatForm" class="grid md:grid-cols-2 gap-6 max-w-3xl mx-auto">
-        <input type="text" id="name" placeholder="নাম/আইডি" required class="p-4 border-2 rounded-xl text-xl">
-        <input type="text" id="breed" placeholder="জাত" class="p-4 border-2 rounded-xl text-xl">
+      <button onclick="show('dash')" class="mb-6 text-blue-600 font-bold text-xl flex items-center gap-2"><i class="fas fa-arrow-left"></i> ড্যাশবোর্ড</button>
+      <h2 class="text-3xl font-bold text-center mb-8 text-green-700">নতুন ছাগল যোগ করুন</h2>
+      <form id="goatForm" class="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+        <div>
+          <input type="text" id="tagId" placeholder="Tag ID (ম্যানুয়াল)" required class="w-full p-4 border-2 rounded-xl text-xl">
+          <button type="button" onclick="startQRScan()" class="mt-3 w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-xl flex items-center justify-center gap-2">
+            <i class="fas fa-qrcode"></i> QR স্ক্যান করুন
+          </button>
+          <div id="qr-reader" class="mt-4"></div>
+        </div>
+        <select id="breed" required class="p-4 border-2 rounded-xl text-xl"><option value="">জাত নির্বাচন করুন</option></select>
+        <input type="text" id="color" placeholder="রং" class="p-4 border-2 rounded-xl text-xl">
+        <input type="date" id="dob" required class="p-4 border-2 rounded-xl text-xl">
+        <select id="mother" class="p-4 border-2 rounded-xl text-xl"><option value="">মা</option><option>Purchased</option></select>
+        <select id="father" class="p-4 border-2 rounded-xl text-xl"><option value="">বাবা</option><option>AI</option><option>Outside</option></select>
         <select id="gender" onchange="toggleStatus()" required class="p-4 border-2 rounded-xl text-xl">
           <option value="">লিঙ্গ</option>
           <option value="male">পুরুষ</option>
           <option value="female">মাদি</option>
         </select>
         <div id="statusDiv" class="hidden">
-          <select id="status" class="p-4 border-2 rounded-xl text-xl">
-            <option value="">স্ট্যাটাস</option>
-          </select>
+          <select id="status" class="p-4 border-2 rounded-xl text-xl"><option value="">স্ট্যাটাস</option></select>
         </div>
-        <input type="date" id="dob" class="p-4 border-2 rounded-xl text-xl">
-        <input type="text" id="shed" placeholder="শেড" class="p-4 border-2 rounded-xl text-xl">
-        <input type="text" id="mother" placeholder="মায়ের আইডি" class="p-4 border-2 rounded-xl text-xl">
-        <input type="text" id="father" placeholder="বাবার আইডি" class="p-4 border-2 rounded-xl text-xl">
-        <button type="submit" class="md:col-span-2 bg-green-600 text-white py-6 rounded-2xl text-2xl font-bold">সেভ করুন</button>
+        <button type="submit" class="md:col-span-2 bg-green-600 hover:bg-green-700 text-white py-6 rounded-2xl text-2xl font-bold">
+          সেভ করুন
+        </button>
       </form>
     </div>
 
-    <!-- লিস্ট ও রেকর্ড -->
+    <!-- সব ছাগল লিস্ট -->
     <div id="list" class="hidden p-8">
-      <button onclick="show('dash')" class="mb-6 text-blue-600 font-bold text-xl">ড্যাশবোর্ড</button>
-      <h2 class="text-3xl font-bold text-center mb-6">ছাগলের লিস্ট</h2>
-      <input type="text" id="search" onkeyup="searchGoat()" placeholder="আইডি/নাম দিয়ে সার্চ" class="w-full p-4 border-2 rounded-xl text-xl mb-6">
-      <div id="goatList" class="grid md:grid-cols-2 gap-6"></div>
-    </div>
-
-    <!-- ব্রিডিং -->
-    <div id="breeding" class="hidden p-8">
-      <button onclick="show('dash')" class="mb-6 text-blue-600 font-bold text-xl">ড্যাশবোর্ড</button>
-      <h2 class="text-3xl font-bold text-center mb-8">ব্রিডিং রেকর্ড</h2>
-      <form id="breedForm" class="space-y-6 max-w-2xl mx-auto">
-        <input type="text" id="female_id" placeholder="মাদি আইডি" required class="w-full p-4 border-2 rounded-xl text-xl">
-        <input type="text" id="male_id" placeholder="পুরুষ আইডি" class="w-full p-4 border-2 rounded-xl text-xl">
-        <input type="date" id="mating_date" required class="w-full p-4 border-2 rounded-xl text-xl">
-        <button type="submit" class="w-full bg-purple-600 text-white py-6 rounded-2xl text-2xl font-bold">রেকর্ড সেভ করুন</button>
-      </form>
-      <div id="breedList" class="mt-10 space-y-4"></div>
-    </div>
-
-    <!-- গ্রোথ চার্ট -->
-    <div id="stats" class="hidden p-8">
-      <button onclick="show('dash')" class="mb-6 text-blue-600 font-bold text-xl">ড্যাশবোর্ড</button>
-      <h2 class="text-3xl font-bold text-center mb-8">ওজন গ্রোথ চার্ট</h2>
-      <div class="max-w-4xl mx-auto">
-        <canvas id="growthChart"></canvas>
+      <button onclick="show('dash')" class="mb-6 text-blue-600 font-bold text-xl flex items-center gap-2"><i class="fas fa-arrow-left"></i> ড্যাশবোর্ড</button>
+      <h2 id="listTitle" class="text-3xl font-bold text-center mb-6">সব ছাগল</h2>
+      <div class="flex justify-center mb-6">
+        <select id="sortBy" onchange="applySorting()" class="p-4 border-2 rounded-xl text-lg">
+          <option value="age-asc">বয়স: ছোট → বড়</option>
+          <option value="age-desc">বয়স: বড় → ছোট</option>
+          <option value="weight-desc">ওজন: ভারী → হালকা</option>
+          <option value="weight-asc">ওজন: হালকা → ভারী</option>
+        </select>
       </div>
+      <div id="goatList" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+    </div>
+
+    <!-- বাচ্চা সেকশন -->
+    <div id="kidsSection" class="hidden p-8">
+      <button onclick="show('dash')" class="mb-6 text-blue-600 font-bold text-xl flex items-center gap-2"><i class="fas fa-arrow-left"></i> ড্যাশবোর্ড</button>
+      <h2 class="text-3xl font-bold text-center mb-6 text-pink-600">বাচ্চা ছাগল (০-৯০ দিন)</h2>
+      <div id="kidsList" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
     </div>
 
   </div>
 </div>
 
 <script>
-// তোমার নতুন Apps Script এর /exec লিঙ্ক এখানে বসাও
 const URL = "https://script.google.com/macros/s/AKfycbynBsQ8zMzTPsHbWz9e4sP_5LUEUeW6g_896I25Xcwdhds05R4_RuFUHNHgz2eo42NqfA/exec";
 
-let goats = [], weights = [], medicines = [], breedings = [];
+let goats = [], weights = [], breeds = [];
+
+async function fetchAll() {
+  const r = await fetch(URL + "?action=getAll");
+  const data = await r.json();
+  goats = data.goats || [];
+  weights = data.weights || [];
+  breeds = data.breeds || [];
+  return data;
+}
+
+function calculateAge(dob) {
+  if (!dob) return 99999;
+  const diff = Date.now() - new Date(dob).getTime();
+  return Math.floor(diff / (1000 * 60 * 60 * 24));
+}
+
+function getLatestWeight(tagId) {
+  const recs = weights.filter(w => w.goatId === tagId).sort((a,b) => new Date(b.date) - new Date(a.date));
+  return recs.length ? parseFloat(recs[0].weight) : 0;
+}
+
+async function loadDashboard() {
+  await fetchAll();
+  const kidsCount = goats.filter(g => calculateAge(g.dob) <= 90).length;
+  document.getElementById('total').textContent = goats.length;
+  document.getElementById('male').textContent = goats.filter(g => g.gender === 'male').length;
+  document.getElementById('female').textContent = goats.filter(g => g.gender === 'female').length;
+  document.getElementById('pregnant').textContent = goats.filter(g => g.status === 'pregnant').length;
+  document.getElementById('patha').textContent = goats.filter(g => g.status === 'patha').length;
+  document.getElementById('khashi').textContent = goats.filter(g => g.status === 'khashi').length;
+  document.getElementById('kids').textContent = kidsCount;
+}
 
 function show(page) {
-  document.querySelectorAll('div[id]').forEach(d => d.classList.add('hidden'));
+  document.querySelectorAll('#dash,#addgoat,#list,#kidsSection,#breeding,#stats').forEach(el => el.classList.add('hidden'));
   document.getElementById(page).classList.remove('hidden');
   if (page === 'dash') loadDashboard();
-  if (page === 'list') loadList();
-  if (page === 'breeding') loadBreeding();
-  if (page === 'stats') loadChart();
+  if (page === 'addgoat') loadFormOptions();
+}
+
+async function loadFormOptions() {
+  await fetchAll();
+  const breedSel = document.getElementById('breed');
+  breedSel.innerHTML = '<option value="">জাত নির্বাচন করুন</option>';
+  breeds.forEach(b => { if (b[0]) breedSel.innerHTML += `<option>${b[0]}</option>`; });
+
+  const motherSel = document.getElementById('mother');
+  const fatherSel = document.getElementById('father');
+  motherSel.innerHTML = '<option value="">মা</option><option>Purchased</option>';
+  fatherSel.innerHTML = '<option value="">বাবা</option><option>AI</option><option>Outside</option>';
+  goats.forEach(g => {
+    const opt = `<option value="${g.tagId}">${g.tagId}</option>`;
+    motherSel.innerHTML += opt;
+    fatherSel.innerHTML += opt;
+  });
 }
 
 function toggleStatus() {
@@ -123,143 +184,82 @@ function toggleStatus() {
   } else div.classList.add('hidden');
 }
 
-async function loadDashboard() {
-  try {
-    const r = await fetch(URL + "?action=getAll");
-    const data = await r.json();
-    goats = data.goats || [];
-    document.getElementById('total').textContent = goats.length;
-    document.getElementById('male').textContent = goats.filter(x=>x.gender==='male').length;
-    document.getElementById('female').textContent = goats.filter(x=>x.gender==='female').length;
-    document.getElementById('pregnant').textContent = goats.filter(x=>x.status==='pregnant').length;
-    document.getElementById('patha').textContent = goats.filter(x=>x.status==='patha').length;
-    document.getElementById('khashi').textContent = goats.filter(x=>x.status==='khashi').length;
-  } catch(e) {}
-}
-
 document.getElementById('goatForm').onsubmit = async function(e) {
   e.preventDefault();
   const goat = {
-    id: Date.now().toString(),
-    name: document.getElementById('name').value.trim(),
+    tagId: document.getElementById('tagId').value.trim(),
     breed: document.getElementById('breed').value,
-    gender: document.getElementById('gender').value,
-    status: document.getElementById('status').value || "",
+    color: document.getElementById('color').value,
     dob: document.getElementById('dob').value,
-    shed: document.getElementById('shed').value,
     mother: document.getElementById('mother').value,
-    father: document.getElementById('father').value
+    father: document.getElementById('father').value,
+    gender: document.getElementById('gender').value,
+    status: document.getElementById('status').value || ""
   };
   await fetch(URL + "?action=saveGoat&data=" + encodeURIComponent(JSON.stringify(goat)));
-  alert("ছাগল যোগ হয়েছে!");
+  alert("সফল! ছাগল যোগ হয়েছে।");
   this.reset();
-  document.getElementById('statusDiv').classList.add('hidden');
   show('dash');
 };
 
-async function loadList() {
-  const r = await fetch(URL + "?action=getAll");
-  const data = await r.json();
-  goats = data.goats || [];
-  weights = data.weights || [];
-  medicines = data.medicines || [];
-
+function renderList(containerId, data) {
   let html = '';
-  goats.forEach(g => {
-    const w = weights.filter(x=>x.goatId===g.id).slice(-3);
-    const m = medicines.filter(x=>x.goatId===g.id).slice(-2);
+  data.forEach(g => {
+    const age = calculateAge(g.dob);
+    const weight = getLatestWeight(g.tagId);
+    const isKid = age <= 90;
     html += `
-      <div class="goat-card bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-2xl border-2 border-blue-200">
-        <h3 class="text-2xl font-bold">${g.name} (${g.id})</h3>
-        <p>জাত: ${g.breed} | লিঙ্গ: ${g.gender==='male'?'পুরুষ':'মাদি'} | স্ট্যাটাস: ${g.status}</p>
-        <p>জন্ম: ${g.dob} | শেড: ${g.shed}</p>
-        <div class="mt-4 space-y-2">
-          <button onclick="addWeight('${g.id}')" class="bg-blue-600 text-white px-4 py-2 rounded">ওজন যোগ</button>
-          <button onclick="addMedicine('${g.id}')" class="bg-red-600 text-white px-4 py-2 rounded ml-2">ওষুধ</button>
-        </div>
+      <div class="goat-card ${isKid ? 'bg-pink-50 border-pink-300' : 'bg-teal-50 border-teal-300'} p-6 rounded-2xl border-2">
+        <h3 class="text-2xl font-bold flex items-center gap-3">
+          <span class="tag-id">${g.tagId}</span>
+          ${isKid ? '<span class="kid-badge">বাচ্চা</span>' : ''}
+        </h3>
+        <p>জাত: ${g.breed} | রং: ${g.color || '—'}</p>
+        <p>বয়স: ${age} দিন | ওজন: ${weight} কেজি</p>
+        <p>লিঙ্গ: ${g.gender==='male'?'পুরুষ':'মাদি'} | স্ট্যাটাস: ${g.status || '—'}</p>
       </div>`;
   });
-  document.getElementById('goatList').innerHTML = html || "<p class='text-center text-gray-500'>কোনো ছাগল নেই</p>";
+  document.getElementById(containerId).innerHTML = html || "<p class='text-center text-gray-500 col-span-3'>কোনো ছাগল নেই</p>";
 }
 
-function addWeight(id) {
-  const wt = prompt("ওজন (কেজি):");
-  if (wt) {
-    const date = new Date().toISOString().split('T')[0];
-    fetch(URL + "?action=saveWeight&goatId=" + id + "&weight=" + wt + "&date=" + date);
-    alert("ওজন সেভ হয়েছে!");
-    loadList();
-  }
+function showAllList() {
+  show('list');
+  document.getElementById('listTitle').textContent = "সব ছাগল";
+  renderList('goatList', goats);
 }
 
-function addMedicine(id) {
-  const med = prompt("ওষুধের নাম ও ডোজ:");
-  if (med) {
-    const date = new Date().toISOString().split('T')[0];
-    fetch(URL + "?action=saveMedicine&goatId=" + id + "&med=" + encodeURIComponent(med) + "&date=" + date);
-    alert("ওষুধ রেকর্ড হয়েছে!");
-    loadList();
-  }
+function showKids() {
+  show('kidsSection');
+  const kids = goats.filter(g => calculateAge(g.dob) <= 90);
+  renderList('kidsList', kids);
 }
 
-async function loadBreeding() {
-  const r = await fetch(URL + "?action=getAll");
-  const data = await r.json();
-  breedings = data.breedings || [];
-  let html = '';
-  breedings.forEach(b => {
-    html += `<div class="bg-purple-50 p-6 rounded-xl border border-purple-200">
-      <p>মাদি: ${b.femaleId} | পুরুষ: ${b.maleId} | মেটিং: ${b.date}</p>
-    </div>`;
-  });
-  document.getElementById('breedList').innerHTML = html || "<p class='text-center'>কোনো রেকর্ড নেই</p>";
+function applySorting() {
+  const sort = document.getElementById('sortBy').value;
+  let sorted = [...goats];
+  if (sort === 'age-asc') sorted.sort((a,b) => calculateAge(a.dob) - calculateAge(b.dob));
+  if (sort === 'age-desc') sorted.sort((a,b) => calculateAge(b.dob) - calculateAge(a.dob));
+  if (sort === 'weight-desc') sorted.sort((a,b) => getLatestWeight(b.tagId) - getLatestWeight(a.tagId));
+  if (sort === 'weight-asc') sorted.sort((a,b) => getLatestWeight(a.tagId) - getLatestWeight(b.tagId));
+  renderList('goatList', sorted);
 }
 
-document.getElementById('breedForm').onsubmit = async function(e) {
-  e.preventDefault();
-  const b = {
-    femaleId: document.getElementById('female_id').value,
-    maleId: document.getElementById('male_id').value,
-    date: document.getElementById('mating_date').value
-  };
-  await fetch(URL + "?action=saveBreeding&data=" + encodeURIComponent(JSON.stringify(b)));
-  alert("ব্রিডিং রেকর্ড সেভ হয়েছে!");
-  this.reset();
-  loadBreeding();
-};
-
-async function loadChart() {
-  const r = await fetch(URL + "?action=getAll");
-  const data = await r.json();
-  weights = data.weights || [];
-  const labels = [...new Set(weights.map(w => w.date))].sort();
-  const datasets = goats.slice(0, 5).map(g => {
-    const his = weights.filter(w => w.goatId === g.id);
-    return {
-      label: g.name || g.id,
-      data: labels.map(d => his.find(h=>h.date===d)?.weight || null),
-      borderColor: '#' + Math.floor(Math.random()*16777215).toString(16),
-      fill: false
-    };
-  });
-
-  new Chart(document.getElementById('growthChart'), {
-    type: 'line',
-    data: { labels, datasets },
-    options: { responsive: true, scales: { y: { beginAtZero: true } } }
-  });
+function startQRScan() {
+  const scanner = new Html5Qrcode("qr-reader");
+  scanner.start(
+    { facingMode: "environment" },
+    { fps: 10, qrbox: 250 },
+    (text) => {
+      document.getElementById('tagId').value = text;
+      scanner.stop();
+      document.getElementById('qr-reader').innerHTML = "<p class='text-green-600 font-bold'>সফলভাবে স্ক্যান হয়েছে!</p>";
+    },
+    () => {}
+  );
 }
 
-function searchGoat() {
-  const term = document.getElementById('search').value.toLowerCase();
-  const cards = document.querySelectorAll('.goat-card');
-  cards.forEach(card => {
-    const text = card.textContent.toLowerCase();
-    card.style.display = text.includes(term) ? 'block' : 'none';
-  });
-}
-
-// শুরুতে ড্যাশবোর্ড
+// শুরু
+loadDashboard();
 show('dash');
 </script>
 </body>
